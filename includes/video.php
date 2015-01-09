@@ -37,7 +37,7 @@ class cfs_video extends cfs_field
     $svcs = isset($field->options['services']) ? $field->options['services'] : 'all';
     ?>
     <label>Service: </label>
-    <select name="video_select_<?php echo $field->id ?>" class="<?php echo $field->input_class; ?>_select">
+    <select name="video_select" class="<?php echo $field->input_class; ?>_select" style="width: 30%;">
       <?php  if( $svcs == 'all' || $svcs == 'youtube' ): ?>
         <?php $selected = ($svcs == 'youtube' ? ' selected' : '') ?>
         <option value="youtube"<?php echo $selected; ?>>YouTube</option>
@@ -49,7 +49,7 @@ class cfs_video extends cfs_field
       <?php endif; ?>
     </select>
       <label>Video ID: </label>
-      <input type="text" name="video_<?php echo $field->id ?>" class="<?php echo $field->input_class; ?>_input" value="" />
+      <input type="text" name="video" class="<?php echo $field->input_class; ?>_input" value="" />
       <input type="hidden" name="<?php echo $field->input_name; ?>" class="video_value" value="<?php echo $field->value; ?>" />
     <?php
     }
@@ -138,9 +138,26 @@ class cfs_video extends cfs_field
             var val, svc;
             val = $field.find('input.video_input').val();
             svc = $field.find('select').val();
-            console.log( "-->Video Id:", val , svc);
+            val = parse_video_id(val);
             $field.find('input.video_value').val(svc + "|" + val);
           };
+
+          function parse_video_id(val){
+            var vimeo_re = /vimeo.com\/(\d+)($|\/)/;  // //www.youtube-nocookie.com/embed/d7ob0Pw_7WE?rel=0
+            var youtube_re = /\/\/(?:www\.)?youtu(?:\.be|be\.com|be-nocookie\.com)\/(?:watch\?v=|embed\/)?([a-z0-9_\-]+)/i;
+            //var youtube_re = /(?:watch\?v=|embed\/)?([a-z0-9_\-]+)/i;
+
+            var match = val.match(vimeo_re);
+            if (match){
+              return match[1];
+            }else{
+              match = val.match(youtube_re);
+              if (match){
+                return match[1];
+              }
+            }
+            return val;
+          }
 
           function init_fields($field){
             var re, val = $field.find('input.video_value').val();
@@ -160,6 +177,7 @@ class cfs_video extends cfs_field
             this.each(function() {
               var $this = $(this);
               $this.addClass('ready');
+
               init_fields($this);
 
               // handle video ID change
@@ -185,23 +203,24 @@ class cfs_video extends cfs_field
       if( empty($value) )
         return $value;
       list($service, $id) = explode ('|' , $value, 2 );
-      $val = array('id'      => $id);
+
+      $val = array('id' => $id, 'host' => $service);
+
       if( $service == 'youtube' ){
         $val['url'] = '//www.youtube-nocookie.com/embed/' . $id;
       }else{
         $val['url'] = '//player.vimeo.com/video/' . $id;
       }
+
       if($field->options['return_value'] == 'embed' ){
-        $val['embed'] = '<embed code here>';
-      }else{
-        $val['service'] = $service;
+        //Could allow a filter to modify or set attributes on the embed iframe tag.
+        $video_id = $id;
+        $val['embed'] = include( CFS_VIDEO_DIR . '/assets/templates/' . $service . '-embed.php');
       }
+
       return $val;
     }
         /*
-          <iframe width="1280" height="720" src="//www.youtube-nocookie.com/embed/UW9DWd48fSE?rel=0" frameborder="0" allowfullscreen></iframe>
-
-<iframe src="//player.vimeo.com/video/116160160" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe> <p><a href="http://vimeo.com/116160160">She & Him 'Stay Awhile'</a> from <a href="http://vimeo.com/lawebdecanada">CANADA</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
 
         stdClass Object
         (
