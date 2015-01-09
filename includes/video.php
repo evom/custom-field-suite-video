@@ -12,7 +12,7 @@ class cfs_video extends cfs_field
 
 
       /*
-        stdClass Object
+        $field =  stdClass Object
       (
           [type] => video
           [input_name] => cfs[input][3][value]
@@ -23,7 +23,6 @@ class cfs_video extends cfs_field
                   [return_value] => embed
                   [required] => 0
               )
-
           [value] =>
           [id] => 3
           [group_id] => 86
@@ -31,27 +30,27 @@ class cfs_video extends cfs_field
       */
     function html($field)
     {
-    if ( !empty( $field->value ) ) {
+      $svcs = isset($field->options['services']) ? $field->options['services'] : 'all';
+      ?>
 
-    }
-    $svcs = isset($field->options['services']) ? $field->options['services'] : 'all';
-    ?>
-    <label>Service: </label>
-    <select name="video_select" class="<?php echo $field->input_class; ?>_select" style="width: 30%;">
-      <?php  if( $svcs == 'all' || $svcs == 'youtube' ): ?>
-        <?php $selected = ($svcs == 'youtube' ? ' selected' : '') ?>
-        <option value="youtube"<?php echo $selected; ?>>YouTube</option>
-      <?php endif; ?>
+      <label style="display:inline;margin-left:10px;"><?php _e('Service:', 'cfs'); ?></label>
+      <select name="video_select" class="<?php echo $field->input_class; ?>_select" style="width:20%;">
+        <?php  if( $svcs == 'all' || $svcs == 'youtube' ): ?>
+          <?php $selected = ($svcs == 'youtube' ? ' selected' : '') ?>
+          <option value="youtube"<?php echo $selected; ?>>YouTube</option>
+        <?php endif; ?>
 
-      <?php  if( $svcs == 'all' || $svcs == 'vimeo' ): ?>
-        <?php $selected = ($svcs == 'vimeo' ? ' selected' : '') ?>
-        <option value="vimeo"<?php echo $selected; ?>>Vimeo</option>
-      <?php endif; ?>
-    </select>
-      <label>Video ID: </label>
-      <input type="text" name="video" class="<?php echo $field->input_class; ?>_input" value="" />
+        <?php  if( $svcs == 'all' || $svcs == 'vimeo' ): ?>
+          <?php $selected = ($svcs == 'vimeo' ? ' selected' : '') ?>
+          <option value="vimeo"<?php echo $selected; ?>>Vimeo</option>
+        <?php endif; ?>
+      </select>
+
+      <label style="display:inline;padding-left:10px;"><?php _e('Video ID:', 'cfs'); ?></label>
+      <input type="text" name="video" class="<?php echo $field->input_class; ?>_input" value="" style="width: 48%;"/>
+
       <input type="hidden" name="<?php echo $field->input_name; ?>" class="video_value" value="<?php echo $field->value; ?>" />
-    <?php
+      <?php
     }
 
 
@@ -59,6 +58,8 @@ class cfs_video extends cfs_field
       if( $val == $test )
         echo ' checked="checked"';
     }
+
+
 
     function options_html($key, $field)
     {
@@ -69,9 +70,9 @@ class cfs_video extends cfs_field
                 <label><?php _e('Services', 'cfs'); ?></label>
             </td>
             <td>
-              <input type="radio" name="cfs[fields][<?php echo $key; ?>][options][services]" value="all" <?php checked($svc, 'all') ?>>All&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <input type="radio" name="cfs[fields][<?php echo $key; ?>][options][services]" value="youtube" <?php checked($svc, 'youtube') ?>>YouTube&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <input type="radio" name="cfs[fields][<?php echo $key; ?>][options][services]" value="vimeo" <?php checked($svc, 'vimeo') ?>>Vimeo
+              <input type="radio" name="cfs[fields][<?php echo $key; ?>][options][services]" value="all" <?php $this->checked($svc, 'all') ?>>All&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <input type="radio" name="cfs[fields][<?php echo $key; ?>][options][services]" value="youtube" <?php $this->checked($svc, 'youtube') ?>>YouTube&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <input type="radio" name="cfs[fields][<?php echo $key; ?>][options][services]" value="vimeo" <?php $this->checked($svc, 'vimeo') ?>>Vimeo
               <p class="description"><?php _e('Which services are supported?', 'cfs'); ?></p>
             </td>
         </tr>
