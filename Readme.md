@@ -30,3 +30,10 @@ Calling `CFS()->get(<field_name>)` returns an array with the video ID, service d
 
 The YouTube and Vimeo embed markup is stored in separate template files located in `cfs-video/assets/templates`. 
 The video ID is available in the PHP variable `video_id`. Use `<?php echo $video_id ?>` to output the ID into the URL of the embed code.
+
+
+## Installation
+
+1. Upload plugin folder to the `/wp-content/plugins/` directory
+2. Activate the plugin through the 'Plugins' menu in WordPress
+3. When creating new Meta Fields in Custom Field Suite ('*Field Groups*' in WordPress Admin Menus), a new field type named `video` will be available in the 'Field Type' popup menu.
